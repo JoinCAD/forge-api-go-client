@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/outer-labs/forge-api-go-client/oauth"
+	"github.com/JoinCAD/forge-api-go-client/oauth"
 )
 
 // BucketAPI holds the necessary data for making Bucket related calls to Forge Data Management service
@@ -58,7 +58,6 @@ type ListedBuckets struct {
 	Next string `json:"next"`
 }
 
-
 // CreateBucket creates and returns details of created bucket, or an error on failure
 func (api BucketAPI) CreateBucket(bucketKey, policyKey string) (result BucketDetails, err error) {
 
@@ -105,10 +104,6 @@ func (api BucketAPI) GetBucketDetails(bucketKey string) (result BucketDetails, e
 
 	return getBucketDetails(path, bucketKey, bearer.AccessToken)
 }
-
-
-
-
 
 /*
  *	SUPPORT FUNCTIONS

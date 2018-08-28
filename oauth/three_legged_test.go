@@ -1,7 +1,6 @@
-package oauth_test
+package oauth
 
 import (
-	"github.com/apprentice3d/forge-api-go-client/oauth"
 	"os"
 	"testing"
 )
@@ -16,7 +15,7 @@ func TestThreeLeggedAuth_Authorize(t *testing.T) {
 		t.Fatal("Could not get Forge env vars")
 	}
 
-	client := oauth.NewThreeLeggedClient(clientID,
+	client := NewThreeLeggedClient(clientID,
 		clientSecret,
 		"http://localhost:3009/callback")
 

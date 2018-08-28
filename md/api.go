@@ -1,16 +1,17 @@
 package md
 
 import (
-	"github.com/outer-labs/forge-api-go-client/oauth"
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"bytes"
-	"io/ioutil"
-	"errors"
 	"strconv"
-	"io"
+
+	"github.com/JoinCAD/forge-api-go-client/oauth"
 )
 
 var (
@@ -18,11 +19,11 @@ var (
 	// model into svf.
 	TranslationSVFPreset = TranslationParams{
 		Output: OutputSpec{
-			Destination:DestSpec{"us"},
-			Formats:[]FormatSpec{
+			Destination: DestSpec{"us"},
+			Formats: []FormatSpec{
 				FormatSpec{
 					"svf",
-					[]string{"2d","3d"},
+					[]string{"2d", "3d"},
 				},
 			},
 		},
@@ -55,39 +56,39 @@ type TranslationParams struct {
 
 // TranslationResult reflects data received upon successful creation of translation job
 type TranslationResult struct {
-	Result string `json:"result"`
-	URN    string `json:"urn"`
+	Result       string `json:"result"`
+	URN          string `json:"urn"`
 	AcceptedJobs struct {
 		Output OutputSpec `json:"output"`
 	}
 }
 
-type ManifestResult struct{
-	Type string `json:"type,omitempty"`
-	HasThumbnail bool `json:"hasThumbnail,string,omitempty"`
-	Status string `json:"status,omitempty"`
-	Progress string `json:"progress,omitempty"`
-	Region string `json:"region,omitempty"`
-	URN string `json:"urn,omitempty"`
-	Derivatives []DerivativeSpec `json:"derivatives,omitempty"`
+type ManifestResult struct {
+	Type         string           `json:"type,omitempty"`
+	HasThumbnail bool             `json:"hasThumbnail,string,omitempty"`
+	Status       string           `json:"status,omitempty"`
+	Progress     string           `json:"progress,omitempty"`
+	Region       string           `json:"region,omitempty"`
+	URN          string           `json:"urn,omitempty"`
+	Derivatives  []DerivativeSpec `json:"derivatives,omitempty"`
 }
 
-type DerivativeSpec struct{
-	Name string `json:"name,omitempty"`
-	HasThumbnail bool `json:"hasThumbnail,string,omitempty"`
-	Role string `json:"role,omitempty"`
-	Status string `json:"status,omitempty"`
-	Progress string `json:"progress,omitempty"`
-	Children []ChildrenSpec `json:"children,omitempty"`
+type DerivativeSpec struct {
+	Name         string         `json:"name,omitempty"`
+	HasThumbnail bool           `json:"hasThumbnail,string,omitempty"`
+	Role         string         `json:"role,omitempty"`
+	Status       string         `json:"status,omitempty"`
+	Progress     string         `json:"progress,omitempty"`
+	Children     []ChildrenSpec `json:"children,omitempty"`
 }
 
-type ChildrenSpec struct{
-	GUID string `json:"guid,omitempty"`
-	Role string `json:"role,omitempty"`
-	MIME string `json:"mime,omitempty"`
-	URN string `json:"urn,omitempty"`
+type ChildrenSpec struct {
+	GUID     string `json:"guid,omitempty"`
+	Role     string `json:"role,omitempty"`
+	MIME     string `json:"mime,omitempty"`
+	URN      string `json:"urn,omitempty"`
 	Progress string `json:"progress,omitempty"`
-	Status string `json:"status,omitempty"`
+	Status   string `json:"status,omitempty"`
 }
 
 // OutputSpec reflects data found upon creation translation job and receiving translation job status
@@ -102,39 +103,39 @@ type DestSpec struct {
 }
 
 // FormatSpec is used within OutputSpecs and should be used when specifying the expected format and views (2d or/and 3d)
-type FormatSpec struct{
+type FormatSpec struct {
 	Type  string   `json:"type"`
 	Views []string `json:"views"`
 }
 
-type MetadataResult struct{
+type MetadataResult struct {
 	Data MetadataSpec `json:"data",omitempty`
 }
 
-type MetadataSpec struct{
-	Type string `json:"type",omitempty`
+type MetadataSpec struct {
+	Type     string     `json:"type",omitempty`
 	Metadata []ViewSpec `json:"metadata",omitempty`
 }
 
-type ViewSpec struct{
+type ViewSpec struct {
 	Name string `json:"name",omitempty`
 	Role string `json:"role",omitempty`
 	Guid string `json:"guid",omitempty`
 }
 
-type PropertiesResult struct{
-	Data PropertiesSpec `json:"data",omitempty`
-	Result string `json:"result",omitempty`
+type PropertiesResult struct {
+	Data   PropertiesSpec `json:"data",omitempty`
+	Result string         `json:"result",omitempty`
 }
 
-type PropertiesSpec struct{
-	Type string    `json:"type"`
+type PropertiesSpec struct {
+	Type       string       `json:"type"`
 	Collection []ObjectSpec `json:"collection"`
 }
 
-type ObjectSpec struct{
-	ObjectID int64 `json:"objectid"`
-	Name string     `json:"name"`
+type ObjectSpec struct {
+	ObjectID   int64  `json:"objectid"`
+	Name       string `json:"name"`
 	ExternalID string `json:"externalId"`
 	Properties json.RawMessage
 }
@@ -166,7 +167,6 @@ func (a ModelDerivativeAPI) TranslateToSVF(objectID string) (result TranslationR
 
 	return
 }
-
 
 func (a ModelDerivativeAPI) GetManifest(urn string) (result ManifestResult, err error) {
 	bearer, err := a.Authenticate("data:read")
@@ -272,7 +272,7 @@ func getManifest(path string, urn string, token string) (result ManifestResult, 
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET",
-		path + "/" + urn + "/manifest",
+		path+"/"+urn+"/manifest",
 		nil)
 
 	if err != nil {
@@ -305,7 +305,7 @@ func getThumbnail(path string, urn string, token string) (reader io.ReadCloser, 
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET",
-		path + "/" + urn + "/thumbnail",
+		path+"/"+urn+"/thumbnail",
 		nil)
 
 	if err != nil {
@@ -331,11 +331,11 @@ func getThumbnail(path string, urn string, token string) (reader io.ReadCloser, 
 }
 
 func getPropertiesStream(path string, urn string, viewId string, token string) (
-	statusCode int, result io.ReadCloser, err error){
+	statusCode int, result io.ReadCloser, err error) {
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET",
-		path + "/" + urn + "/metadata/" + viewId + "/properties",
+		path+"/"+urn+"/metadata/"+viewId+"/properties",
 		nil)
 
 	if err != nil {
@@ -358,7 +358,7 @@ func getPropertiesStream(path string, urn string, viewId string, token string) (
 func getPropertiesObject(path string, urn string, viewId string, token string) (
 	result PropertiesResult, err error) {
 	status, stream, err := getPropertiesStream(path, urn, viewId, token)
-	if err != nil{
+	if err != nil {
 		return
 	}
 	defer stream.Close()
@@ -380,7 +380,7 @@ func getMetadata(path string, urn string, token string) (
 	client := http.Client{}
 
 	req, err := http.NewRequest("GET",
-		path + "/" + urn + "/metadata",
+		path+"/"+urn+"/metadata",
 		nil)
 
 	if err != nil {

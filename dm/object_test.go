@@ -1,11 +1,9 @@
-package dm_test
+package dm
 
 import (
 	"io/ioutil"
 	"os"
 	"testing"
-	"net/http"
-	"github.com/outer-labs/forge-api-go-client/dm"
 )
 
 func TestBucketAPI_ListObjects(t *testing.T) {
@@ -13,7 +11,7 @@ func TestBucketAPI_ListObjects(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	testBucketName := "just_a_test_bucket"
 
@@ -41,7 +39,7 @@ func TestBucketAPI_UploadObject(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	tempBucket := "some_temp_bucket_for_testing"
 	testFilePath := "../assets/HelloWorld.rvt"

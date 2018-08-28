@@ -1,12 +1,10 @@
-package dm_test
+package dm
 
 import (
 	"fmt"
-	"github.com/outer-labs/forge-api-go-client/dm"
 	"log"
 	"os"
 	"testing"
-	"net/http"
 )
 
 func TestBucketAPI_CreateBucket(t *testing.T) {
@@ -15,7 +13,7 @@ func TestBucketAPI_CreateBucket(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	t.Run("Create a bucket", func(t *testing.T) {
 		_, err := bucketAPI.CreateBucket("go_testing_bucket", "transient")
@@ -56,7 +54,7 @@ func TestBucketAPI_GetBucketDetails(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	testBucketKey := "my_test_bucket_key_for_go"
 
@@ -99,7 +97,7 @@ func TestBucketAPI_ListBuckets(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	t.Run("List available buckets", func(t *testing.T) {
 		_, err := bucketAPI.ListBuckets("", "", "")
@@ -149,7 +147,7 @@ func ExampleBucketAPI_CreateBucket() {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
+	bucketAPI := NewBucketAPIWithCredentials(clientID, clientSecret)
 
 	bucket, err := bucketAPI.CreateBucket("some_unique_name", "transient")
 

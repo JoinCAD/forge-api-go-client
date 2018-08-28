@@ -1,14 +1,14 @@
-package md_test
+package md
 
 import (
-	"testing"
-	"os"
-	"github.com/apprentice3d/forge-api-go-client/dm"
-	"github.com/apprentice3d/forge-api-go-client/md"
-	"io/ioutil"
-	"encoding/json"
-	"encoding/base64"
 	"bytes"
+	"encoding/base64"
+	"encoding/json"
+	"io/ioutil"
+	"os"
+	"testing"
+
+	"github.com/JoinCAD/forge-api-go-client/dm"
 )
 
 func TestAPI_TranslateToSVF(t *testing.T) {
@@ -16,7 +16,7 @@ func TestAPI_TranslateToSVF(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 	bucketAPI := dm.NewBucketAPIWithCredentials(clientID, clientSecret)
-	mdAPI := md.NewAPIWithCredentials(clientID, clientSecret)
+	mdAPI := NewAPIWithCredentials(clientID, clientSecret)
 
 	tempBucketName := "go_testing_md_bucket"
 	testFilePath := "../assets/HelloWorld.rvt"
@@ -85,7 +85,7 @@ func TestAPI_TranslateToSVF(t *testing.T) {
 
 func TestAPI_TranslateToSVF2_JSON_Creation(t *testing.T) {
 
-	params := md.TranslationSVFPreset
+	params := TranslationSVFPreset
 	params.Input.URN = base64.RawStdEncoding.EncodeToString([]byte("just a test urn"))
 
 	output, err := json.Marshal(&params)
@@ -115,7 +115,7 @@ func TestAPI_TranslateToSVF2_JSON_Creation(t *testing.T) {
       }
 `
 
-	var example md.TranslationParams
+	var example TranslationParams
 	err = json.Unmarshal([]byte(referenceExample), &example)
 	if err != nil {
 		t.Fatal("Could not unmarshal the reference example: ", err.Error())

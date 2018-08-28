@@ -1,8 +1,7 @@
-package recap_test
+package recap
 
 import (
 	"fmt"
-	"github.com/apprentice3d/forge-api-go-client/recap"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,7 +23,7 @@ func TestReCapAPIWorkflowUsingRemoteLinks(t *testing.T) {
 		"https://s3.amazonaws.com/adsk-recap-public/forge/lion/DSC_1165.JPG",
 	}
 
-	var scene recap.PhotoScene
+	var scene PhotoScene
 
 	testingFormat := "obj"
 
@@ -32,7 +31,7 @@ func TestReCapAPIWorkflowUsingRemoteLinks(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	recapAPI := recap.NewAPIWithCredentials(clientID, clientSecret)
+	recapAPI := NewAPIWithCredentials(clientID, clientSecret)
 
 	t.Run("Creating a new photoScene", func(t *testing.T) {
 		var err error
@@ -58,7 +57,7 @@ func TestReCapAPIWorkflowUsingRemoteLinks(t *testing.T) {
 	})
 
 	t.Run("Checking scene status each 30 sec", func(t *testing.T) {
-		var progressResult recap.SceneProgressReply
+		var progressResult SceneProgressReply
 		var err error
 		for {
 			if progressResult, err = recapAPI.GetSceneProgress(scene.ID); err != nil {
@@ -87,7 +86,6 @@ func TestReCapAPIWorkflowUsingRemoteLinks(t *testing.T) {
 			t.Error("The received link is empty")
 		}
 	})
-
 
 	t.Run("Check the result file size for normal size", func(t *testing.T) {
 		response, err := recapAPI.GetSceneResults(scene.ID, testingFormat)
@@ -127,7 +125,6 @@ func TestReCapAPIWorkflowUsingRemoteLinks(t *testing.T) {
 
 	})
 
-
 	t.Run("Delete the scene", func(t *testing.T) {
 		_, err := recapAPI.DeleteScene(scene.ID)
 		if err != nil {
@@ -151,7 +148,7 @@ func TestReCapAPIWorkflowUsingLocalFiles(t *testing.T) {
 		"https://s3.amazonaws.com/adsk-recap-public/forge/lion/DSC_1165.JPG",
 	}
 
-	var scene recap.PhotoScene
+	var scene PhotoScene
 
 	testingFormat := "obj"
 
@@ -159,7 +156,7 @@ func TestReCapAPIWorkflowUsingLocalFiles(t *testing.T) {
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
 
-	recapAPI := recap.NewAPIWithCredentials(clientID, clientSecret)
+	recapAPI := NewAPIWithCredentials(clientID, clientSecret)
 
 	t.Run("Creating a new photoScene", func(t *testing.T) {
 		var err error
@@ -200,7 +197,7 @@ func TestReCapAPIWorkflowUsingLocalFiles(t *testing.T) {
 	})
 
 	t.Run("Checking scene status each 30 sec", func(t *testing.T) {
-		var progressResult recap.SceneProgressReply
+		var progressResult SceneProgressReply
 		var err error
 		for {
 			if progressResult, err = recapAPI.GetSceneProgress(scene.ID); err != nil {
@@ -282,7 +279,7 @@ func TestCreatePhotoScene(t *testing.T) {
 	// prepare the credentials
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
-	recapAPI := recap.NewAPIWithCredentials(clientID, clientSecret)
+	recapAPI := NewAPIWithCredentials(clientID, clientSecret)
 	var sceneID string
 
 	t.Run("Create a scene", func(t *testing.T) {
@@ -317,9 +314,9 @@ func ExampleAPI_CreatePhotoScene() {
 
 	clientID := os.Getenv("FORGE_CLIENT_ID")
 	clientSecret := os.Getenv("FORGE_CLIENT_SECRET")
-	recap := recap.NewAPIWithCredentials(clientID, clientSecret)
+	recap := NewAPIWithCredentials(clientID, clientSecret)
 
-	photoScene, err := recap.CreatePhotoScene("test_scene", nil, "object")
+	photoScene, err := CreatePhotoScene("test_scene", nil, "object")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

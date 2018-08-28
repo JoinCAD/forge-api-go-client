@@ -1,8 +1,7 @@
-package oauth_test
+package oauth
 
 import (
 	"fmt"
-	"github.com/apprentice3d/forge-api-go-client/oauth"
 	"log"
 	"os"
 	"testing"
@@ -18,7 +17,7 @@ func TestAuthenticate(t *testing.T) {
 	}
 
 	t.Run("Valid Forge Secrets", func(t *testing.T) {
-		authenticator := oauth.NewTwoLeggedClient(clientID, clientSecret)
+		authenticator := NewTwoLeggedClient(clientID, clientSecret)
 
 		bearer, err := authenticator.Authenticate("data:read")
 
@@ -32,7 +31,7 @@ func TestAuthenticate(t *testing.T) {
 	})
 
 	t.Run("Invalid Forge Secrets", func(t *testing.T) {
-		authenticator := oauth.NewTwoLeggedClient("", clientSecret)
+		authenticator := NewTwoLeggedClient("", clientSecret)
 
 		bearer, err := authenticator.Authenticate("data:read")
 
@@ -46,7 +45,7 @@ func TestAuthenticate(t *testing.T) {
 	})
 
 	t.Run("Invalid scope", func(t *testing.T) {
-		authenticator := oauth.NewTwoLeggedClient(clientID, clientSecret)
+		authenticator := NewTwoLeggedClient(clientID, clientSecret)
 
 		bearer, err := authenticator.Authenticate("data:improvise")
 
@@ -60,7 +59,7 @@ func TestAuthenticate(t *testing.T) {
 	})
 
 	t.Run("Invalid or unreachable host", func(t *testing.T) {
-		authenticator := oauth.NewTwoLeggedClient(clientID, clientSecret)
+		authenticator := NewTwoLeggedClient(clientID, clientSecret)
 		authenticator.Host = "http://localhost"
 
 		bearer, err := authenticator.Authenticate("data:read")
@@ -86,7 +85,7 @@ func ExampleTwoLeggedAuth_Authenticate() {
 	}
 
 	// create oauth client
-	authenticator := oauth.NewTwoLeggedClient(clientID, clientSecret)
+	authenticator := NewTwoLeggedClient(clientID, clientSecret)
 
 	// request a token with needed scopes, separated by spaces
 	bearer, err := authenticator.Authenticate("data:read data:write")
