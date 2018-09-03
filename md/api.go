@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/JoinCAD/forge-api-go-client/oauth"
@@ -86,9 +87,11 @@ type ChildrenSpec struct {
 	GUID     string `json:"guid,omitempty"`
 	Role     string `json:"role,omitempty"`
 	MIME     string `json:"mime,omitempty"`
+	Name     string `json:"name,omitempty"`
 	URN      string `json:"urn,omitempty"`
 	Progress string `json:"progress,omitempty"`
 	Status   string `json:"status,omitempty"`
+	Type     string `json:"type,omitempty"`
 }
 
 // OutputSpec reflects data found upon creation translation job and receiving translation job status
@@ -227,6 +230,18 @@ func (a ModelDerivativeAPI) GetThumbnail(urn string) (reader io.ReadCloser, err 
 	return
 }
 
+func (a ModelDerivativeAPI) GetDerivative(urn string, derivativeUrn string) (reader io.ReadCloser, err error) {
+	bearer, err := a.Authenticate("data:read")
+	if err != nil {
+		return
+	}
+
+	path := a.Host + a.ModelDerivativePath
+	reader, err = getThumbnail(path, urn, bearer.AccessToken)
+
+	return getDerivative(path, urn, derivativeUrn, bearer.AccessToken)
+}
+
 /*
  *	SUPPORT FUNCTIONS
  */
@@ -306,6 +321,35 @@ func getThumbnail(path string, urn string, token string) (reader io.ReadCloser, 
 
 	req, err := http.NewRequest("GET",
 		path+"/"+urn+"/thumbnail",
+		nil)
+
+	if err != nil {
+		return
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	response, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	if response.StatusCode != http.StatusOK {
+		content, _ := ioutil.ReadAll(response.Body)
+		err = errors.New("[" + strconv.Itoa(response.StatusCode) + "] " + string(content))
+		return
+	}
+
+	reader = response.Body
+	return
+}
+
+func getDerivative(path string, urn string, derivativeUrn string, token string) (reader io.ReadCloser, err error) {
+	client := http.Client{}
+
+	req, err := http.NewRequest("GET",
+		path+"/"+urn+"/manifest/"+url.PathEscape(derivativeUrn),
 		nil)
 
 	if err != nil {
