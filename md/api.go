@@ -84,14 +84,15 @@ type DerivativeSpec struct {
 }
 
 type ChildrenSpec struct {
-	GUID     string `json:"guid,omitempty"`
-	Role     string `json:"role,omitempty"`
-	MIME     string `json:"mime,omitempty"`
-	Name     string `json:"name,omitempty"`
-	URN      string `json:"urn,omitempty"`
-	Progress string `json:"progress,omitempty"`
-	Status   string `json:"status,omitempty"`
-	Type     string `json:"type,omitempty"`
+	GUID     string         `json:"guid,omitempty"`
+	Role     string         `json:"role,omitempty"`
+	MIME     string         `json:"mime,omitempty"`
+	Name     string         `json:"name,omitempty"`
+	URN      string         `json:"urn,omitempty"`
+	Progress string         `json:"progress,omitempty"`
+	Status   string         `json:"status,omitempty"`
+	Type     string         `json:"type,omitempty"`
+	Children []ChildrenSpec `json:"children,omitempty"`
 }
 
 // OutputSpec reflects data found upon creation translation job and receiving translation job status
@@ -237,8 +238,6 @@ func (a ModelDerivativeAPI) GetDerivative(urn string, derivativeUrn string) (rea
 	}
 
 	path := a.Host + a.ModelDerivativePath
-	reader, err = getThumbnail(path, urn, bearer.AccessToken)
-
 	return getDerivative(path, urn, derivativeUrn, bearer.AccessToken)
 }
 
@@ -308,7 +307,6 @@ func getManifest(path string, urn string, token string) (result ManifestResult, 
 		err = errors.New("[" + strconv.Itoa(response.StatusCode) + "] " + string(content))
 		return
 	}
-
 	decoder := json.NewDecoder(response.Body)
 
 	err = decoder.Decode(&result)

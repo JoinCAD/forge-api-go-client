@@ -3,9 +3,10 @@ package dm
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -40,8 +41,6 @@ func (api BucketAPI) UploadObject(bucketKey string, objectName string, reader io
 	return uploadObject(path, bucketKey, objectName, reader, bearer.AccessToken)
 }
 
-
-
 // ListObjects returns the bucket contains along with details on each item.
 func (api BucketAPI) ListObjects(bucketKey, limit, beginsWith, startAt string) (result BucketContent, err error) {
 	bearer, err := api.Authenticate("data:read")
@@ -53,8 +52,6 @@ func (api BucketAPI) ListObjects(bucketKey, limit, beginsWith, startAt string) (
 	return listObjects(path, bucketKey, limit, beginsWith, startAt, bearer.AccessToken)
 }
 
-
-
 /*
  *	SUPPORT FUNCTIONS
  */
@@ -63,7 +60,7 @@ func listObjects(path, bucketKey, limit, beginsWith, startAt, token string) (res
 	task := http.Client{}
 
 	req, err := http.NewRequest("GET",
-		path + "/" + bucketKey + "/objects",
+		path+"/"+bucketKey+"/objects",
 		nil,
 	)
 
@@ -107,11 +104,9 @@ func uploadObject(path, bucketKey, objectName string, dataContent io.Reader, tok
 
 	task := http.Client{}
 
-	//dataContent := bytes.NewReader(data)
 	req, err := http.NewRequest("PUT",
-		path+"/"+ bucketKey + "/objects/" + objectName,
+		path+"/"+bucketKey+"/objects/"+url.PathEscape(objectName),
 		dataContent)
-
 	if err != nil {
 		return
 	}
@@ -134,5 +129,4 @@ func uploadObject(path, bucketKey, objectName string, dataContent io.Reader, tok
 	err = decoder.Decode(&result)
 
 	return
-
 }
